@@ -6,7 +6,10 @@ import BottomNav from './BottomNav'
 import SessionWarning from './SessionWarning'
 
 function PageLayout({ children, title, currentPage = 'chat' }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    // Initialize based on screen size: closed on mobile, open on desktop
+    return window.innerWidth >= 1024
+  })
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen)

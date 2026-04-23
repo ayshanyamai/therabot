@@ -17,7 +17,10 @@ function Chat() {
   const [sessionId, setSessionId] = useState(null)
   const [showCrisisWarning, setShowCrisisWarning] = useState(false)
   const [conversations, setConversations] = useState([])
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    // Initialize based on screen size: closed on mobile, open on desktop
+    return window.innerWidth >= 1024
+  })
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [showLoginPrompt, setShowLoginPrompt] = useState(false)
   const messagesEndRef = useRef(null)

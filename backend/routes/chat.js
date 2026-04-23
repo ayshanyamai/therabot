@@ -56,20 +56,9 @@ router.post('/', async (req, res) => {
     } catch (error) {
       console.error('AI Response Error:', error);
 
-      // Check if it's an authentication error
-      if (error.message.includes('401:') ||
-        error.message.includes('User not found') ||
-        error.message.includes('API key not configured')) {
-        console.log('🚨 BACKEND: Sending 401 response for auth error');
-        console.log('Error message:', error.message);
-        return res.status(401).json({
-          message: 'Authentication failed. Please login again.',
-          code: 'AUTH_REQUIRED'
-        });
-      }
-
-      // For other errors, use fallback response
-      aiResponse = "I'm having some technical difficulties right now, but I'm here to support you. Could you tell me more about what's on your mind?";
+      // Always use fallback response instead of sending 401 errors to frontend
+      console.log('Using fallback response due to API error');
+      aiResponse = "I'm here to listen and support you. While I'm experiencing some technical difficulties, please know that your feelings are valid and important. Could you tell me more about what's on your mind?";
     }
 
     // Add messages to conversation
@@ -101,17 +90,7 @@ router.post('/', async (req, res) => {
   } catch (error) {
     console.error('Chat Error:', error);
 
-    // Check if it's an authentication error
-    if (error.message.includes('User not found') ||
-      error.message.includes('API key not configured') ||
-      error.message.includes('401') ||
-      error.message.includes('Unauthorized')) {
-      return res.status(401).json({
-        message: 'Authentication failed. Please login again.',
-        code: 'AUTH_REQUIRED'
-      });
-    }
-
+    // Return generic error without 401 status to avoid frontend logout
     res.status(500).json({
       message: 'Failed to process message',
       error: error.message

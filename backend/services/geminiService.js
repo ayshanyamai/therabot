@@ -6,6 +6,14 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.1-8b-instruct';
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
+// Debug logging
+console.log('=== OpenRouter Configuration ===');
+console.log('API Key loaded:', OPENROUTER_API_KEY ? 'YES (length: ' + OPENROUTER_API_KEY.length + ')' : 'NO');
+console.log('API Key first 20 chars:', OPENROUTER_API_KEY?.substring(0, 20));
+console.log('Model:', OPENROUTER_MODEL);
+console.log('Offline Mode:', process.env.OFFLINE_MODE);
+console.log('================================');
+
 // Offline mode flag - set to true to bypass all API calls
 const OFFLINE_MODE = process.env.OFFLINE_MODE === 'true' || false;
 

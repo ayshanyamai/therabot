@@ -26,23 +26,12 @@ export const createApiFetch = (auth) => {
       headers
     })
 
-    // Check for 401 Unauthorized response
+    // Check for 401 Unauthorized response - just log and return response
+    // (Backend should not send 401 anymore, but handle gracefully if it does)
     if (response.status === 401) {
-      console.log('🚨 Received 401 response (logout disabled for testing)')
-      console.log('Response URL:', url)
-      console.log('Response status:', response.status)
-
-      // Try to get error details
-      try {
-        const errorData = await response.clone().json()
-        console.log('Error data:', errorData)
-      } catch (e) {
-        console.log('Could not parse error response')
-      }
-
-      // Commented out logout for testing
-      // auth.logout(true) // Force logout and redirect
-      throw new Error('Authentication failed - testing mode')
+      console.log('Received 401 response, but backend should not send these anymore')
+      // Return the response anyway to let the component handle it
+      return response
     }
 
     // Check for 403 Forbidden response
