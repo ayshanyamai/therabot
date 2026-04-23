@@ -2,11 +2,12 @@
   "name": "therabot-backend",
   "version": "1.0.0",
   "description": "Therabot Mental Health Chatbot Backend",
-  "main": "server.js",
+  "main": "api/index.js",
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "build": "echo 'No build step required for serverless functions'"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",

@@ -20,8 +20,12 @@ export const createApiFetch = (auth) => {
       headers['Authorization'] = `Bearer ${token}`
     }
 
-    // Make the request
-    const response = await fetch(url, {
+    // Make the request - prepend the API base URL
+    const apiUrl = url.startsWith('/api')
+      ? `https://therabot-7zir.vercel.app${url}`
+      : url
+
+    const response = await fetch(apiUrl, {
       ...options,
       headers
     })
