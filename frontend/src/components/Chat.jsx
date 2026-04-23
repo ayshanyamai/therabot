@@ -1,4 +1,16 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useSyncExternalStore } from 'react'
+
+// Hook to subscribe to window width changes
+function useWindowWidth() {
+  return useSyncExternalStore(
+    (callback) => {
+      window.addEventListener('resize', callback)
+      return () => window.removeEventListener('resize', callback)
+    },
+    () => window.innerWidth,
+    () => 1024 // SSR fallback
+  )
+}
 import { Send, AlertTriangle, LogOut, Sparkles, Lock, MessageCircle } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
@@ -17,10 +29,9 @@ function Chat() {
   const [sessionId, setSessionId] = useState(null)
   const [showCrisisWarning, setShowCrisisWarning] = useState(false)
   const [conversations, setConversations] = useState([])
-  const [sidebarOpen, setSidebarOpen] = useState(() => {
-    // Initialize based on screen size: closed on mobile, open on desktop
-    return window.innerWidth >= 1024
-  })
+  const windowWidth = useWindowWidth()
+  const isDesktop = windowWidth >= 1024
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [showLoginPrompt, setShowLoginPrompt] = useState(false)
   const messagesEndRef = useRef(null)
@@ -240,16 +251,18 @@ function Chat() {
         noindex={true}
       />
       <div className="flex h-screen bg-gray-50">
-        {/* Sidebar */}
-        <div className={`${sidebarOpen ? 'block' : 'hidden'} lg:block`}>
-          <Sidebar
-            conversations={conversations}
-            currentSessionId={sessionId}
-            onSelectConversation={loadConversation}
-            onNewChat={startNewChat}
-            onDeleteConversation={deleteConversation}
-          />
-        </div>
+        {/* Sidebar - Desktop always visible, mobile conditional */}
+        {(sidebarOpen || window.innerWidth >= 1024) && (
+          <div className="lg:block">
+            <Sidebar
+              conversations={conversations}
+              currentSessionId={sessionId}
+              onSelectConversation={loadConversation}
+              onNewChat={startNewChat}
+              onDeleteConversation={deleteConversation}
+            />
+          </div>
+        )}
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col min-w-0 pb-16 lg:pb-0">

@@ -20,16 +20,18 @@ function PageLayout({ children, title, currentPage = 'chat' }) {
       <SEO title={title || 'Therabot'} />
       <SessionWarning />
       <div className="min-h-screen bg-gray-50 flex">
-        {/* Sidebar */}
-        <div className={`${sidebarOpen ? 'block' : 'hidden'} lg:block lg:w-80 flex-shrink-0`}>
-          <Sidebar
-            conversations={[]}
-            currentSessionId={null}
-            onSelectConversation={() => { }}
-            onNewChat={() => window.location.href = '/chat'}
-            onDeleteConversation={() => { }}
-          />
-        </div>
+        {/* Sidebar - Desktop always visible, mobile conditional */}
+        {(sidebarOpen || window.innerWidth >= 1024) && (
+          <div className="lg:w-80 flex-shrink-0">
+            <Sidebar
+              conversations={[]}
+              currentSessionId={null}
+              onSelectConversation={() => { }}
+              onNewChat={() => window.location.href = '/chat'}
+              onDeleteConversation={() => { }}
+            />
+          </div>
+        )}
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col min-h-screen pb-16 lg:pb-0">
