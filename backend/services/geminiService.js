@@ -6,6 +6,9 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.1-8b-instruct';
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
+// Offline mode flag - set to true to bypass all API calls
+const OFFLINE_MODE = process.env.OFFLINE_MODE === 'true' || false;
+
 const MENTAL_HEALTH_SYSTEM_PROMPT = `You are Therabot, a compassionate AI mental health support assistant for university students in Kenya.
 
 Your role:
@@ -23,13 +26,33 @@ IMPORTANT: You are NOT a replacement for professional therapy. If someone expres
 
 Respond in a conversational, caring manner. Keep responses concise (2-4 sentences) unless detailed guidance is needed.`;
 
+// Fallback responses for when OpenRouter fails
+const getFallbackResponse = (userMessage, retryCount) => {
+  const fallbackResponses = [
+    "I'm here to listen and support you. While I'm experiencing some technical difficulties, please know that your feelings are valid and important. Could you tell me more about what's on your mind?",
+    "Thank you for sharing with me. I'm currently having some connection issues, but I want you to know that seeking support is a sign of strength. What's been challenging you lately?",
+    "I appreciate you reaching out. Sometimes technology doesn't work perfectly, but I'm still here for you. What would help you feel better right now?",
+    "I'm glad you're here. Even though I'm having some technical difficulties, your mental health matters. Have you tried any coping strategies that have worked for you before?"
+  ];
+
+  return fallbackResponses[retryCount % fallbackResponses.length];
+};
+
 export const getAIResponse = async (userMessage, conversationHistory = [], retryCount = 0) => {
-  const maxRetries = 3;
-  const timeouts = [10000, 20000, 30000]; // Progressive timeouts
+  const maxRetries = 2; // Reduced retries for faster fallback
+  const timeouts = [8000, 15000]; // Shorter timeouts
 
   try {
+    // Check offline mode first
+    if (OFFLINE_MODE) {
+      console.log('Running in OFFLINE MODE - using fallback responses');
+      return getFallbackResponse(userMessage, retryCount);
+    }
+
+    // Check if API key is configured
     if (!OPENROUTER_API_KEY) {
-      throw new Error('OpenRouter API key not configured');
+      console.log('API key not configured, using fallback response');
+      return getFallbackResponse(userMessage, retryCount);
     }
 
     // Build messages array for OpenRouter
@@ -73,7 +96,17 @@ export const getAIResponse = async (userMessage, conversationHistory = [], retry
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error?.message || `OpenRouter API error: ${response.status}`);
+      const errorMessage = errorData.error?.message || `OpenRouter API error: ${response.status}`;
+
+      // Check for authentication errors
+      if (response.status === 401 ||
+        errorMessage.includes('User not found') ||
+        errorMessage.includes('API key') ||
+        errorMessage.includes('Unauthorized')) {
+        throw new Error(`401: ${errorMessage}`);
+      }
+
+      throw new Error(errorMessage);
     }
 
     const data = await response.json();
@@ -81,23 +114,14 @@ export const getAIResponse = async (userMessage, conversationHistory = [], retry
   } catch (error) {
     console.error(`OpenRouter API Error (attempt ${retryCount + 1}):`, error.message);
 
-    // Retry on network errors or timeouts
-    if (retryCount < maxRetries &&
-      (error.name === 'AbortError' ||
-        error.code === 'ETIMEDOUT' ||
-        error.message.includes('fetch failed'))) {
-
-      console.log(`Retrying OpenRouter API call... (${retryCount + 1}/${maxRetries})`);
-      await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1))); // Wait before retry
-      return getAIResponse(userMessage, conversationHistory, retryCount + 1);
+    // For 401 errors, let them propagate to trigger frontend logout
+    if (error.message.includes('401:')) {
+      throw error;
     }
 
-    // Return fallback response if all retries fail
-    if (error.name === 'AbortError' || error.code === 'ETIMEDOUT') {
-      return "I'm having trouble connecting right now. Please try again in a moment. Your mental health is important, and I want to give you the full attention you deserve.";
-    }
-
-    throw new Error('Failed to get AI response: ' + error.message);
+    // For other errors, use fallback response
+    console.log('Using fallback response due to API error');
+    return getFallbackResponse(userMessage, retryCount);
   }
 };
 
@@ -113,9 +137,52 @@ export const detectCrisis = (message) => {
 };
 
 export const generateTitle = async (messages) => {
+  // Smart fallback title generator
+  const generateSmartTitle = (messages) => {
+    const firstUserMessage = messages.find(m => m.role === 'user')?.content || '';
+
+    // Simple keyword-based title generation
+    if (firstUserMessage.toLowerCase().includes('stress') || firstUserMessage.toLowerCase().includes('anxious')) {
+      return 'Stress & Anxiety Support';
+    }
+    if (firstUserMessage.toLowerCase().includes('depress') || firstUserMessage.toLowerCase().includes('sad')) {
+      return 'Depression Support';
+    }
+    if (firstUserMessage.toLowerCase().includes('sleep') || firstUserMessage.toLowerCase().includes('tired')) {
+      return 'Sleep Issues';
+    }
+    if (firstUserMessage.toLowerCase().includes('exam') || firstUserMessage.toLowerCase().includes('study')) {
+      return 'Academic Stress';
+    }
+    if (firstUserMessage.toLowerCase().includes('relationship') || firstUserMessage.toLowerCase().includes('friend')) {
+      return 'Relationship Support';
+    }
+    if (firstUserMessage.toLowerCase().includes('family') || firstUserMessage.toLowerCase().includes('parent')) {
+      return 'Family Issues';
+    }
+
+    // Default fallback titles
+    const fallbackTitles = [
+      'Mental Health Chat',
+      'Support Session',
+      'Wellness Check-in',
+      'Therapy Session',
+      'Emotional Support'
+    ];
+
+    return fallbackTitles[Math.floor(Math.random() * fallbackTitles.length)];
+  };
+
   try {
+    // Check offline mode first
+    if (OFFLINE_MODE) {
+      console.log('OFFLINE MODE: Using smart fallback title');
+      return generateSmartTitle(messages);
+    }
+
     if (!OPENROUTER_API_KEY) {
-      throw new Error('OpenRouter API key not configured');
+      console.log('No API key for title generation, using fallback');
+      return generateSmartTitle(messages);
     }
 
     // Get first user message and response for context
@@ -187,12 +254,7 @@ Title:`;
     return title || 'Mental Health Support';
   } catch (error) {
     console.error('Title generation error:', error);
-    // Fallback: use first user message excerpt
-    const firstUserMsg = messages.find(m => m.role === 'user');
-    if (firstUserMsg) {
-      const excerpt = firstUserMsg.content.slice(0, 30);
-      return excerpt + (firstUserMsg.content.length > 30 ? '...' : '');
-    }
-    return 'Mental Health Support';
+    // Always return a smart fallback title
+    return generateSmartTitle(messages);
   }
 };

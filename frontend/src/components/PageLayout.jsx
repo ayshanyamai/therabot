@@ -3,6 +3,7 @@ import Header from './Header'
 import Sidebar from './Sidebar'
 import SEO from './SEO'
 import BottomNav from './BottomNav'
+import SessionWarning from './SessionWarning'
 
 function PageLayout({ children, title, currentPage = 'chat' }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -14,6 +15,7 @@ function PageLayout({ children, title, currentPage = 'chat' }) {
   return (
     <>
       <SEO title={title || 'Therabot'} />
+      <SessionWarning />
       <div className="min-h-screen bg-gray-50 flex">
         {/* Sidebar */}
         <div className={`${sidebarOpen ? 'block' : 'hidden'} lg:block lg:w-80 flex-shrink-0`}>

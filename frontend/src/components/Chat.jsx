@@ -8,6 +8,7 @@ import ChatMessage from './ChatMessage'
 import TypingIndicator from './TypingIndicator'
 import Header from './Header'
 import BottomNav from './BottomNav'
+import { createApiFetch } from '../utils/apiInterceptor'
 
 function Chat() {
   const [messages, setMessages] = useState([])
@@ -21,26 +22,15 @@ function Chat() {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false)
   const messagesEndRef = useRef(null)
   const navigate = useNavigate()
-  const { user, logout, getToken, isAnonymous, anonymousMessageCount, anonymousLimit, incrementAnonymousMessage, hasReachedAnonymousLimit } = useAuth()
+  const { user, logout, getToken, isAnonymous, anonymousMessageCount, anonymousLimit, incrementAnonymousMessage, hasReachedAnonymousLimit, validateSession } = useAuth()
 
   const API_URL = '/api/chat'
-
-  // Helper to get auth headers
-  const getAuthHeaders = () => {
-    const token = getToken()
-    const headers = { 'Content-Type': 'application/json' }
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`
-    }
-    return headers
-  }
+  const apiFetch = createApiFetch({ user, getToken, validateSession, logout })
 
   // Fetch conversations list
   const fetchConversations = async () => {
     try {
-      const res = await fetch(`${API_URL}/conversations`, {
-        headers: getAuthHeaders()
-      })
+      const res = await apiFetch(`${API_URL}/conversations`)
       const data = await res.json()
       // Deduplicate by sessionId before setting state
       const uniqueConversations = data.filter((conv, index, self) =>
@@ -68,9 +58,8 @@ function Chat() {
   // Start new conversation
   const startNewChat = async () => {
     try {
-      const res = await fetch(`${API_URL}/new`, {
-        method: 'POST',
-        headers: getAuthHeaders()
+      const res = await apiFetch(`${API_URL}/new`, {
+        method: 'POST'
       })
       const data = await res.json()
       setSessionId(data.sessionId)
@@ -98,9 +87,7 @@ function Chat() {
   // Load conversation
   const loadConversation = async (id) => {
     try {
-      const res = await fetch(`${API_URL}/history/${id}`, {
-        headers: getAuthHeaders()
-      })
+      const res = await apiFetch(`${API_URL}/history/${id}`)
       const data = await res.json()
       setSessionId(data.sessionId)
       localStorage.setItem('therabot_session_id', data.sessionId)
@@ -117,9 +104,8 @@ function Chat() {
   // Delete conversation
   const deleteConversation = async (id) => {
     try {
-      await fetch(`${API_URL}/conversations/${id}`, {
-        method: 'DELETE',
-        headers: getAuthHeaders()
+      await apiFetch(`${API_URL}/conversations/${id}`, {
+        method: 'DELETE'
       })
       if (sessionId === id) {
         startNewChat()
@@ -155,9 +141,8 @@ function Chat() {
     const reachedLimit = incrementAnonymousMessage()
 
     try {
-      const res = await fetch(API_URL, {
+      const res = await apiFetch(API_URL, {
         method: 'POST',
-        headers: getAuthHeaders(),
         body: JSON.stringify({ message: userMessage, sessionId }),
       })
 
@@ -264,7 +249,7 @@ function Chat() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col min-w-0 pb-16 lg:pb-0">
           <Header
             onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
             sidebarOpen={sidebarOpen}
@@ -466,6 +451,9 @@ function Chat() {
           </div>
         )}
       </div>
+
+      {/* Bottom Navigation for Mobile */}
+      <BottomNav currentPage="chat" />
     </>
   )
 }

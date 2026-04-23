@@ -18,9 +18,31 @@ export function AuthProvider({ children }) {
 
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser))
+        const userData = JSON.parse(storedUser)
+        setUser(userData)
+
+        // Validate session immediately after setting user
+        const token = localStorage.getItem('therabot_token')
+        if (token) {
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]))
+            const currentTime = Date.now() / 1000
+
+            // Check if token is expired (with 5 minute buffer)
+            if (payload.exp < (currentTime - 300)) {
+              console.log('Session expired, logging out...')
+              logout(true)
+              return
+            }
+          } catch (error) {
+            console.error('Error validating token:', error)
+            logout(true)
+            return
+          }
+        }
       } catch (e) {
         localStorage.removeItem('therabot_user')
+        logout(true)
       }
     } else if (storedAnonymous === 'true') {
       setIsAnonymous(true)
@@ -93,7 +115,7 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const logout = () => {
+  const logout = (forceRedirect = false) => {
     setUser(null)
     setIsAnonymous(false)
     setAnonymousMessageCount(0)
@@ -102,6 +124,37 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('therabot_anonymous')
     localStorage.removeItem('therabot_anonymous_messages')
     localStorage.removeItem('therabot_session_id')
+
+    if (forceRedirect) {
+      window.location.href = '/login'
+    }
+  }
+
+  // Check if token is expired
+  const isTokenExpired = () => {
+    const token = localStorage.getItem('therabot_token')
+    if (!token) return true
+
+    try {
+      // Decode JWT token (basic implementation)
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      const currentTime = Date.now() / 1000
+
+      // Check if token is expired (with 5 minute buffer)
+      return payload.exp < (currentTime - 300)
+    } catch (error) {
+      console.error('Error decoding token:', error)
+      return true // Assume expired if can't decode
+    }
+  }
+
+  // Validate session and force logout if expired
+  const validateSession = () => {
+    if (user && isTokenExpired()) {
+      logout(true) // Force redirect to login
+      return false
+    }
+    return true
   }
 
   // Get auth token for API requests
@@ -149,6 +202,7 @@ export function AuthProvider({ children }) {
     logout,
     forgotPassword,
     getToken,
+    validateSession,
     loading,
     isAuthenticated: !!user,
     isAnonymous,
