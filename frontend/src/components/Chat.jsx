@@ -328,23 +328,49 @@ function Chat() {
         {/* Input Area */}
         <div className="border-t border-gray-200 bg-white/80 backdrop-blur-sm p-4">
           <div className="max-w-3xl mx-auto">
-            <form onSubmit={sendMessage} className="relative">
-              <input
-                type="text"
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                placeholder="Message Therabot..."
-                className="w-full pl-5 pr-14 py-4 bg-gray-100 border-0 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 placeholder-gray-400 shadow-inner"
-                disabled={isLoading}
-              />
-              <button
-                type="submit"
-                disabled={isLoading || !inputMessage.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl disabled:opacity-40 disabled:cursor-not-allowed hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg shadow-emerald-200"
-              >
-                <Send className="w-5 h-5" />
-              </button>
-            </form>
+            {hasReachedAnonymousLimit() ? (
+              <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-4 text-center">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Lock className="w-5 h-5 text-emerald-600" />
+                  <p className="font-semibold text-gray-900">Message limit reached</p>
+                </div>
+                <p className="text-sm text-gray-600 mb-3">
+                  You&apos;ve used all {anonymousLimit} free messages. Sign in or create an account to continue chatting.
+                </p>
+                <div className="flex gap-3 justify-center">
+                  <button
+                    onClick={handleLoginRedirect}
+                    className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+                  >
+                    Sign in
+                  </button>
+                  <button
+                    onClick={handleRegisterRedirect}
+                    className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg hover:from-emerald-700 hover:to-teal-700 transition-all text-sm font-medium"
+                  >
+                    Create account
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={sendMessage} className="relative">
+                <input
+                  type="text"
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  placeholder={isAnonymous ? `Message ${anonymousMessageCount}/${anonymousLimit}...` : "Message Therabot..."}
+                  className="w-full pl-5 pr-14 py-4 bg-gray-100 border-0 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none text-gray-900 placeholder-gray-400 shadow-inner"
+                  disabled={isLoading}
+                />
+                <button
+                  type="submit"
+                  disabled={isLoading || !inputMessage.trim()}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl disabled:opacity-40 disabled:cursor-not-allowed hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg shadow-emerald-200"
+                >
+                  <Send className="w-5 h-5" />
+                </button>
+              </form>
+            )}
             <p className="text-center text-xs text-gray-400 mt-3">
               Therabot is not a replacement for professional therapy. If you need immediate help, please contact emergency services.
             </p>
@@ -358,6 +384,45 @@ function Chat() {
           className="fixed inset-0 z-40"
           onClick={() => setShowUserMenu(false)}
         />
+      )}
+
+      {/* Login Prompt Modal */}
+      {showLoginPrompt && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-fade-in">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <MessageCircle className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                Continue the Conversation
+              </h3>
+              <p className="text-gray-600">
+                You&apos;ve sent {anonymousLimit} messages. Sign in or create an account to keep chatting and save your conversation history.
+              </p>
+            </div>
+            <div className="space-y-3">
+              <button
+                onClick={handleRegisterRedirect}
+                className="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg shadow-emerald-200"
+              >
+                Create Free Account
+              </button>
+              <button
+                onClick={handleLoginRedirect}
+                className="w-full py-3 bg-white border-2 border-gray-200 text-gray-700 rounded-xl font-medium hover:border-emerald-300 hover:bg-emerald-50 transition-all"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => setShowLoginPrompt(false)}
+                className="w-full py-2 text-gray-500 text-sm hover:text-gray-700 transition-colors"
+              >
+                Maybe later
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
