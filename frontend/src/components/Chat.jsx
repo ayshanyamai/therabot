@@ -7,6 +7,7 @@ import Sidebar from './Sidebar'
 import ChatMessage from './ChatMessage'
 import TypingIndicator from './TypingIndicator'
 import Header from './Header'
+import BottomNav from './BottomNav'
 
 function Chat() {
   const [messages, setMessages] = useState([])
@@ -73,6 +74,7 @@ function Chat() {
       })
       const data = await res.json()
       setSessionId(data.sessionId)
+      localStorage.setItem('therabot_session_id', data.sessionId)
       setMessages([{
         role: 'assistant',
         content: data.welcomeMessage.content,
@@ -84,6 +86,7 @@ function Chat() {
       console.error('Error starting chat:', error)
       const fallbackSessionId = crypto.randomUUID()
       setSessionId(fallbackSessionId)
+      localStorage.setItem('therabot_session_id', fallbackSessionId)
       setMessages([{
         role: 'assistant',
         content: 'Hello! I\'m Therabot, your mental health companion. I\'m here to listen and support you. How are you feeling today?',
@@ -100,6 +103,7 @@ function Chat() {
       })
       const data = await res.json()
       setSessionId(data.sessionId)
+      localStorage.setItem('therabot_session_id', data.sessionId)
       setMessages(data.messages.map(m => ({
         ...m,
         timestamp: new Date(m.timestamp)
@@ -199,14 +203,23 @@ function Chat() {
     navigate('/register')
   }
 
-  // Start on mount if no session
+  // Restore sessionId from localStorage on mount
   useEffect(() => {
-    if (!sessionId) {
+    const storedSessionId = localStorage.getItem('therabot_session_id')
+    if (storedSessionId) {
+      setSessionId(storedSessionId)
+      // Try to load the existing conversation
+      loadConversation(storedSessionId).catch(() => {
+        // If loading fails, start a new chat
+        startNewChat()
+      })
+    } else {
       startNewChat()
     }
   }, [])
 
   const handleLogout = () => {
+    localStorage.removeItem('therabot_session_id')
     logout()
   }
 

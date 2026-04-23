@@ -101,6 +101,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('therabot_user')
     localStorage.removeItem('therabot_anonymous')
     localStorage.removeItem('therabot_anonymous_messages')
+    localStorage.removeItem('therabot_session_id')
   }
 
   // Get auth token for API requests

@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { ArrowLeft, User, Bell, Shield, Palette, Volume2, Globe, HelpCircle, Mail, Phone, MapPin } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import PageLayout from '../components/PageLayout'
 
-function Settings() {
+function SettingsContent() {
   const { user } = useAuth()
   const [activeTab, setActiveTab] = useState('profile')
   const [formData, setFormData] = useState({
@@ -143,14 +144,12 @@ function Settings() {
             </div>
             <button
               onClick={() => handlePreferenceChange('reminderEnabled', !formData.preferences.reminderEnabled)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                formData.preferences.reminderEnabled ? 'bg-emerald-600' : 'bg-gray-200'
-              }`}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${formData.preferences.reminderEnabled ? 'bg-emerald-600' : 'bg-gray-200'
+                }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  formData.preferences.reminderEnabled ? 'translate-x-6' : 'translate-x-1'
-                }`}
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.preferences.reminderEnabled ? 'translate-x-6' : 'translate-x-1'
+                  }`}
               />
             </button>
           </div>
@@ -174,14 +173,12 @@ function Settings() {
             </div>
             <button
               onClick={() => handlePreferenceChange('crisisAlerts', !formData.preferences.crisisAlerts)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                formData.preferences.crisisAlerts ? 'bg-emerald-600' : 'bg-gray-200'
-              }`}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${formData.preferences.crisisAlerts ? 'bg-emerald-600' : 'bg-gray-200'
+                }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  formData.preferences.crisisAlerts ? 'translate-x-6' : 'translate-x-1'
-                }`}
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.preferences.crisisAlerts ? 'translate-x-6' : 'translate-x-1'
+                  }`}
               />
             </button>
           </div>
@@ -193,14 +190,12 @@ function Settings() {
             </div>
             <button
               onClick={() => handlePreferenceChange('sound', !formData.preferences.sound)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                formData.preferences.sound ? 'bg-emerald-600' : 'bg-gray-200'
-              }`}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${formData.preferences.sound ? 'bg-emerald-600' : 'bg-gray-200'
+                }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  formData.preferences.sound ? 'translate-x-6' : 'translate-x-1'
-                }`}
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.preferences.sound ? 'translate-x-6' : 'translate-x-1'
+                  }`}
               />
             </button>
           </div>
@@ -221,14 +216,12 @@ function Settings() {
             </div>
             <button
               onClick={() => handlePreferenceChange('autoSave', !formData.preferences.autoSave)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                formData.preferences.autoSave ? 'bg-emerald-600' : 'bg-gray-200'
-              }`}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${formData.preferences.autoSave ? 'bg-emerald-600' : 'bg-gray-200'
+                }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  formData.preferences.autoSave ? 'translate-x-6' : 'translate-x-1'
-                }`}
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.preferences.autoSave ? 'translate-x-6' : 'translate-x-1'
+                  }`}
               />
             </button>
           </div>
@@ -259,11 +252,10 @@ function Settings() {
                 <button
                   key={theme}
                   onClick={() => handlePreferenceChange('theme', theme)}
-                  className={`px-4 py-2 rounded-lg border capitalize ${
-                    formData.preferences.theme === theme
-                      ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                  }`}
+                  className={`px-4 py-2 rounded-lg border capitalize ${formData.preferences.theme === theme
+                    ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                    : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
                 >
                   {theme}
                 </button>
@@ -352,65 +344,70 @@ function Settings() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <button
-            onClick={() => window.history.back()}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 text-gray-600" />
-          </button>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">Settings</h1>
-            <p className="text-gray-600">Manage your account and preferences</p>
-          </div>
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      {/* Header */}
+      <div className="flex items-center gap-4 mb-8">
+        <button
+          onClick={() => window.location.href = '/chat'}
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5 text-gray-600" />
+        </button>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Settings</h1>
+          <p className="text-gray-600">Manage your account and preferences</p>
+        </div>
+      </div>
+
+      <div className="flex gap-6">
+        {/* Sidebar */}
+        <div className="w-64 flex-shrink-0">
+          <nav className="space-y-1">
+            {tabs.map((tab) => {
+              const Icon = tab.icon
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === tab.id
+                    ? 'bg-emerald-50 text-emerald-700 border-l-2 border-emerald-600'
+                    : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span className="font-medium">{tab.label}</span>
+                </button>
+              )
+            })}
+          </nav>
         </div>
 
-        <div className="flex gap-6">
-          {/* Sidebar */}
-          <div className="w-64 flex-shrink-0">
-            <nav className="space-y-1">
-              {tabs.map((tab) => {
-                const Icon = tab.icon
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                      activeTab === tab.id
-                        ? 'bg-emerald-50 text-emerald-700 border-l-2 border-emerald-600'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span className="font-medium">{tab.label}</span>
-                  </button>
-                )
-              })}
-            </nav>
-          </div>
+        {/* Content */}
+        <div className="flex-1">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            {renderTabContent()}
 
-          {/* Content */}
-          <div className="flex-1">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              {renderTabContent()}
-              
-              {/* Save Button */}
-              <div className="mt-8 pt-6 border-t border-gray-200">
-                <button
-                  onClick={handleSave}
-                  className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
-                >
-                  Save Changes
-                </button>
-              </div>
+            {/* Save Button */}
+            <div className="mt-8 pt-6 border-t border-gray-200">
+              <button
+                onClick={handleSave}
+                className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+              >
+                Save Changes
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
+  )
+}
+
+function Settings() {
+  return (
+    <PageLayout title="Settings" currentPage="settings">
+      <SettingsContent />
+    </PageLayout>
   )
 }
 

@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from 'react'
-import { 
-  User, 
-  Settings, 
-  LogOut, 
-  Moon, 
-  Sun, 
-  Bell, 
-  Shield, 
-  HelpCircle, 
+import {
+  User,
+  Settings,
+  LogOut,
+  Moon,
+  Sun,
+  Bell,
+  Shield,
+  HelpCircle,
   History,
   ChevronDown,
   Palette,
@@ -135,13 +135,19 @@ function ProfileMenu() {
           {/* Menu Items */}
           <div className="py-2">
             {/* Profile */}
-            <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3">
+            <button
+              onClick={() => window.location.href = '/profile'}
+              className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
+            >
               <User className="w-4 h-4 text-gray-400" />
               View Profile
             </button>
 
             {/* Settings */}
-            <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3">
+            <button
+              onClick={() => window.location.href = '/settings'}
+              className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
+            >
               <Settings className="w-4 h-4 text-gray-400" />
               Settings
             </button>
@@ -153,13 +159,16 @@ function ProfileMenu() {
             </button>
 
             {/* Analytics */}
-            <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3">
+            <button
+              onClick={() => window.location.href = '/analytics'}
+              className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
+            >
               <BarChart3 className="w-4 h-4 text-gray-400" />
               Mood Analytics
             </button>
 
             {/* Theme Toggle */}
-            <button 
+            <button
               onClick={handleThemeToggle}
               className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
             >
@@ -168,7 +177,7 @@ function ProfileMenu() {
             </button>
 
             {/* Sound Toggle */}
-            <button 
+            <button
               onClick={handleSoundToggle}
               className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
             >
@@ -177,7 +186,7 @@ function ProfileMenu() {
             </button>
 
             {/* Notifications */}
-            <button 
+            <button
               onClick={handleNotificationToggle}
               className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
             >
@@ -186,7 +195,7 @@ function ProfileMenu() {
             </button>
 
             {/* Export Chat */}
-            <button 
+            <button
               onClick={exportChatHistory}
               className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
             >
@@ -195,7 +204,7 @@ function ProfileMenu() {
             </button>
 
             {/* Clear History */}
-            <button 
+            <button
               onClick={clearChatHistory}
               className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-3"
             >
@@ -218,7 +227,7 @@ function ProfileMenu() {
 
           {/* Logout */}
           <div className="border-t border-gray-100 pt-2">
-            <button 
+            <button
               onClick={handleLogout}
               className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-3"
             >

@@ -238,33 +238,6 @@ function Sidebar({ conversations, currentSessionId, onSelectConversation, onNewC
           </button>
         </div>
 
-        {/* Navigation Menu */}
-        <div className={`px-4 py-3 border-b ${currentTheme.border}`}>
-          <nav className="space-y-1">
-            <button
-              onClick={() => window.location.href = '/settings'}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg ${currentTheme.hover} ${currentTheme.text} transition-colors`}
-            >
-              <ThemedIcon><Settings className="w-4 h-4" /></ThemedIcon>
-              <span className="text-sm font-medium">Settings</span>
-            </button>
-            <button
-              onClick={() => window.location.href = '/analytics'}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg ${currentTheme.hover} ${currentTheme.text} transition-colors`}
-            >
-              <ThemedIcon><BarChart3 className="w-4 h-4" /></ThemedIcon>
-              <span className="text-sm font-medium">Mood Analytics</span>
-            </button>
-            <button
-              onClick={() => window.location.href = '/profile'}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg ${currentTheme.hover} ${currentTheme.text} transition-colors`}
-            >
-              <ThemedIcon><User className="w-4 h-4" /></ThemedIcon>
-              <span className="text-sm font-medium">Profile</span>
-            </button>
-          </nav>
-        </div>
-
         {/* Conversations List */}
         <div className={`flex-1 overflow-y-auto px-2 py-3 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent hover:scrollbar-thumb-white/20`}>
           {uniqueConversations.length === 0 ? (
