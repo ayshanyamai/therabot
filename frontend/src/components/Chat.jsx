@@ -319,18 +319,12 @@ function Chat() {
         <main className="flex-1 overflow-y-auto bg-gradient-to-b from-gray-50 via-white to-gray-50">
           {messages.length === 0 ? (
             <div className="h-full flex items-center justify-center">
-              <div className="text-center max-w-md px-4">
-                <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-200">
-                  <Sparkles className="w-10 h-10 text-white" />
+              <div className="text-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-md shadow-emerald-200">
+                  <MessageCircle className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                  Welcome to Therabot
-                </h3>
-                <p className="text-gray-500 mb-2">
-                  Start a conversation with your AI mental health companion
-                </p>
-                <p className="text-sm text-gray-400">
-                  I&apos;m here to listen, support, and help you navigate your feelings
+                <p className="text-gray-500 text-sm">
+                  New conversation started. Say hello to begin!
                 </p>
               </div>
             </div>
