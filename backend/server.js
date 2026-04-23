@@ -6,7 +6,7 @@ import chatRoutes from './routes/chat.js';
 import authRoutes from './routes/auth.js';
 
 // Load env vars
-dotenv.config();
+dotenv.config({ path: './.env' });
 
 // Connect to database
 connectDB();

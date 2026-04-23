@@ -41,7 +41,11 @@ function Chat() {
         headers: getAuthHeaders()
       })
       const data = await res.json()
-      setConversations(data)
+      // Deduplicate by sessionId before setting state
+      const uniqueConversations = data.filter((conv, index, self) =>
+        index === self.findIndex(c => c.sessionId === conv.sessionId)
+      )
+      setConversations(uniqueConversations)
     } catch (error) {
       console.error('Error fetching conversations:', error)
     }
@@ -156,9 +160,10 @@ function Chat() {
       const data = await res.json()
 
       // Add bot response
+      const botResponse = data.response || "We're experiencing a temporary downtime in our system. Please refresh the browser tab in a few moments, and I'll respond to your message.";
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: data.response,
+        content: botResponse,
         timestamp: new Date()
       }])
 

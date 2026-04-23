@@ -202,7 +202,9 @@ function Sidebar({ conversations, currentSessionId, onSelectConversation, onNewC
             {title}
           </div>
           <div className="space-y-1">
-            {convs.map(conv => (
+            {uniqueConversations.filter(conv =>
+              convs.some(c => c.sessionId === conv.sessionId)
+            ).map(conv => (
               <ConversationItem key={conv.sessionId} conv={conv} />
             ))}
           </div>
